@@ -1,3 +1,4 @@
+#High Variance将在下一节解决
 import torch
 from torch.utils.data import Dataset,DataLoader
 import torch.nn as nn
@@ -7,7 +8,8 @@ import torch.optim as optim
 class My_model(nn.Module):
     def __init__(self):
         super().__init__()
-        self.net=nn.Sequential(nn.Linear(64*64*3,1),nn.Sigmoid())
+        self.net=nn.Sequential(nn.Linear(64*64*3,20),nn.ReLU(),nn.Linear(20,7),nn.ReLU(),nn.Linear(7,5),nn.ReLU(),
+                               nn.Linear(5,1),nn.Sigmoid())
 
     def forwad(self,X):
         logit=self.net(X)
@@ -42,7 +44,7 @@ dataload_test=DataLoader(my_datasets_test,batch_size=50)#用Dataloader导入
 
 def train(modell,epoch,loss,optim):
     for m in range(epoch):
-        for i,(x,y) in enumerate(dataload):
+        for i,(x,y) in enumerate(dataload_train):
             x,y=x.to(device),y.to(device)
             logit=modell.forwad(x)
             los=loss(logit,y)
@@ -83,12 +85,13 @@ device="cuda"
 my_model=My_model().to(device)
 loss=nn.BCELoss()
 opti=optim.Adam(my_model.parameters(),lr=0.001)
-train(my_model,40,loss,opti)#用这个来控制是否训练模型
+#train(my_model,500,loss,opti)#用这个来控制是否训练模型
+torch.save(my_model.state_dict(), "model.pth")#存储模型
+print("Saved PyTorch Model State to model.pth")
 my_model.load_state_dict(torch.load('model.pth'))#从训练好的模型中导入参数
 print(test(dataload_train,my_model))#测试在训练集上的精准度
 print(test(dataload_test,my_model))#测试在dev集上的精准度
-torch.save(my_model.state_dict(), "model.pth")#存储模型
-print("Saved PyTorch Model State to model.pth")
+
 
 
 
