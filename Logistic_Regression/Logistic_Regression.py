@@ -83,7 +83,7 @@ device="cuda"
 my_model=My_model().to(device)
 loss=nn.BCELoss()
 opti=optim.Adam(my_model.parameters(),lr=0.001)
-#train(my_model,40,loss,opti)用这个来控制是否训练模型
+train(my_model,40,loss,opti)#用这个来控制是否训练模型
 my_model.load_state_dict(torch.load('model.pth'))#从训练好的模型中导入参数
 print(test(dataload_train,my_model))#测试在训练集上的精准度
 print(test(dataload_test,my_model))#测试在dev集上的精准度
